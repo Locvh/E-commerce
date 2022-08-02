@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Product } from "../../app/models/Product";
+import { Link } from "react-router-dom";
 
 interface Props {
   product: Product;
@@ -61,20 +62,12 @@ export default function ProductCard({ product }: Props) {
         </Typography>
       </CardContent>
 
-      {/* <CardActions>
-        <LoadingButton
-          loading={status.includes("pendingAddItem" + product.id)}
-          onClick={() =>
-            dispatch(addBasketItemAsync({ productId: product.id }))
-          }
-          size="small"
-        >
-          Add to cart
-        </LoadingButton>
+      <CardActions>
+        <Button size="small">Add to cart</Button>
         <Button component={Link} to={`/catalog/${product.id}`} size="small">
           View
         </Button>
-      </CardActions> */}
+      </CardActions>
     </Card>
   );
 }
