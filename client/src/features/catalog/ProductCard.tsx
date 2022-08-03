@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Button,
@@ -15,22 +15,27 @@ import {
 } from "@mui/material";
 import { Product } from "../../app/models/Product";
 import { Link } from "react-router-dom";
-
+import agent from "../../app/api/agent";
+import { useStoreContext } from "../../app/content/StoreContext";
+import { LoadingButton } from "@mui/lab";
+import { currencyFormat } from "../../app/util/util";
 interface Props {
   product: Product;
 }
 
 export default function ProductCard({ product }: Props) {
-  return (
-    // <ListItem key={product.id}>
-    //   <ListItemAvatar>
-    //     <Avatar src={product.pictureUrl} />
-    //   </ListItemAvatar>
-    //   <ListItemText>
-    //     {product.name}-{product.price}
-    //   </ListItemText>
-    // </ListItem>
+  const [loading, setLoading] = useState(false);
+  const { setBasket } = useStoreContext();
 
+  function handleAddItem(productId: number) {
+    setLoading(true);
+    agent.Basket.addItem(productId)
+      .then((basket) => setBasket(basket))
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  }
+
+  return (
     <Card>
       <CardHeader
         avatar={
@@ -55,7 +60,7 @@ export default function ProductCard({ product }: Props) {
 
       <CardContent>
         <Typography gutterBottom color="secondary" variant="h5">
-          ${(product.price / 100).toFixed(2)}
+          {currencyFormat(product.price)}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {product.brand} / {product.type}
@@ -63,7 +68,13 @@ export default function ProductCard({ product }: Props) {
       </CardContent>
 
       <CardActions>
-        <Button size="small">Add to cart</Button>
+        <LoadingButton
+          loading={loading}
+          onClick={() => handleAddItem(product.id)}
+          size="small"
+        >
+          Add to cart
+        </LoadingButton>
         <Button component={Link} to={`/catalog/${product.id}`} size="small">
           View
         </Button>
