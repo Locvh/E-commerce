@@ -3,10 +3,12 @@ using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-//using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using API.Extensions;
+using API.RequestHelpers;
 
 namespace API.Controllers
 {
@@ -21,9 +23,19 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
+        public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
         {
-            return await _context.Products.ToListAsync();
+            var query = _context.Products
+                 .Sort(productParams.OrderBy)
+                 .Search(productParams.SearchTerm)
+                 .Filter(productParams.Brands, productParams.Types)
+                 .AsQueryable();
+
+            var products = await PagedList<Product>.ToPagedList(query,
+                productParams.PageNumber, productParams.PageSize);
+
+            Response.AddPaginationHeader(products.MetaData);
+            return products;
         }
 
         [HttpGet("{id}")]
@@ -37,5 +49,17 @@ namespace API.Controllers
 
             return product;
         }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            // Distinct: gộp tất cả các giá trị trả về là 1
+            // vd một object có {a,a,a,b,c,c,c,d} = distonct sẽ trả về {a,b,c,d}
+            var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
+            var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+
+            return Ok(new { brands, types });
+        }
+
     }
 }
