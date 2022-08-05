@@ -1,22 +1,19 @@
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { Paper } from "@mui/material";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FieldValues, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
-import { useState } from "react";
-import agent from "../../app/api/agent";
-import { signInUser } from "./accountSlice";
+import { Paper } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { FieldValues, useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/content/configureStore";
+import { signInUser } from "./accountSlice";
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useAppDispatch();
   const {
     register,
